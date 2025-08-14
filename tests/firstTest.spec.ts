@@ -1,4 +1,4 @@
-import {test} from '@playwright/test'
+import {test, expect} from '@playwright/test'
 
 test.beforeEach(async ({page}) => {
   await page.goto('http://localhost:4200')
@@ -76,5 +76,30 @@ test('Finding parent elements', async ({page}) => {
 
   // Approach Two - not recommended : goes one level up
   await page.locator(':text-is("Using the Grid")').locator('..').getByRole('textbox', {name: "Email"}).click()
+
+})
+
+
+test('Resuing the locators', async ({page})=> {
+  await page.locator('nb-card').filter({hasText: "Basic form"}).getByRole('textbox', {name: "Email"}).fill('test@test.com')
+  await page.locator('nb-card').filter({hasText: "Basic form"}).getByRole('textbox', {name: "Password"}).fill('Welcome123')
+  await page.locator('nb-card').filter({hasText: "Basic form"}).getByRole('button').click()
+
+
+  // Refactor
+  const basicForm = page.locator('nb-card').filter({hasText: "Basic Form"})
+  await basicForm.getByRole('textbox', {name: "Email"}).fill('test@test.com')
+  await basicForm.getByRole('textbox', {name: "Password"}).fill('Welcome123')
+  await basicForm.getByRole('button').click()
+  
+  // Further Refactor
+  const emailField = basicForm.getByRole('textbox', {name: "Email"})
+  const passwordField = basicForm.getByRole('textbox', {name: "Password"})
+  await emailField.fill('test@test.com')
+  await passwordField.fill('Welcome123')
+  await basicForm.getByRole('button').click()
+
+  // Assertion
+  await expect(emailField).toHaveValue('test@test.com')
 
 })
