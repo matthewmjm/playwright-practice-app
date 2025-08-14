@@ -61,3 +61,20 @@ test('Finding child elements', async ({page}) => {
   
 
 })
+
+test('Finding parent elements', async ({page}) => {
+  // Approach One
+  await page.locator('nb-card', {hasText: "Using the Grid"}).getByRole('textbox', {name: "Email"}).click()
+  await page.locator('nb-card', {has: page.locator('#inputEmail1')}).getByRole('textbox', {name: "Email"}).click()
+  
+  // filter and locator method
+  await page.locator('nb-card').filter({hasText: "Basic form"}).getByRole('textbox', {name: "Email"}).click()
+  await page.locator('nb-card', {has: page.locator('.status-danger')}).getByRole('textbox', {name: "Password"}).click()
+
+  // filters allow for chaining
+  await page.locator('nb-card').filter({has: page.locator('nb-checkbox')}).filter({hasText: "Sign in"}).getByRole('textbox', {name: "Email"}).click()
+
+  // Approach Two - not recommended : goes one level up
+  await page.locator(':text-is("Using the Grid")').locator('..').getByRole('textbox', {name: "Email"}).click()
+
+})
