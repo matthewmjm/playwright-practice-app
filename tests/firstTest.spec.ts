@@ -109,19 +109,37 @@ test('Extracting values', async ({page})=> {
   const basicForm = page.locator('nb-card').filter({hasText: "Basic Form"})
   const buttonText = await basicForm.locator('button').textContent()
   expect(buttonText).toEqual('Submit')
-
+  
   // All text values
   const allRadioButtonsLabels = await page.locator('nb-radio').allTextContents()
   expect(allRadioButtonsLabels).toContain('Option 1')
   
   // Input value
   const emailField = basicForm.getByRole('textbox', {name: 'Email'})
-    await emailField.fill('test@test.com')
-    const emailValue = await emailField.inputValue()
-    expect(emailValue).toEqual('test@test.com')
-
+  await emailField.fill('test@test.com')
+  const emailValue = await emailField.inputValue()
+  expect(emailValue).toEqual('test@test.com')
+  
   // Validate placeholder value
   const placeholderValue = await emailField.getAttribute('placeholder')
   expect (placeholderValue).toEqual('Email')
+  
+})
 
+test('Assertions', async ({page}) => {
+  const basicFormButton = page.locator('nb-card').filter({hasText: "Basic Form"}).locator('button')
+  // General assertions
+  const value = 5
+  expect(value).toEqual(5)
+
+  const text = await basicFormButton.textContent()
+  expect(text).toEqual('Submit')
+
+  // Locator assertion (always will wait 5 seconds)
+  await expect(basicFormButton).toHaveText('Submit')
+
+  // Soft assertion. - test will not fail and continue to run if assertion has failed NOT RECOMMENDED
+  await expect.soft(basicFormButton).toHaveText('Submit')
+  await basicFormButton.click()
+  
 })
